@@ -1,30 +1,24 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL_ANALISE || "http://localhost:5148/api/projeto/analise";
 
-export const getAllAnalise = async (nome_projeto) => {
-  try {
-    const response = await fetch(`${API_URL}/${nome_projeto}`);
-    if (!response.ok) throw new Error("Erro ao obter itens");
-    return await response.json();
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
-};
+
 
 export const getLastAnalise = async (nome_projeto) => {
   try {
     const response = await fetch(`${API_URL}/${nome_projeto}`);
-    if (!response.ok) throw new Error("Erro ao obter itens");
+    
+    if (!response.ok) {
+      const errorData = await response.json(); 
+      console.error("Erro:", response.status, errorData.message);
+      return {}
+    } 
     const analises = await response.json();
-    
-    
-    console.log(analises)
     return analises;
   } catch (error) {
     console.error(error);
     return null;
   }
 };
+
 
 export const getItemById = async (id) => {
   try {

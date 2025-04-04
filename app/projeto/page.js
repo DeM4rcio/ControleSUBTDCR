@@ -56,28 +56,12 @@ export default function Projetos () {
 
             for (const projeto of data) {
 
-                const response = await getAllEtapas(projeto.NM_PROJETO);
+             
                 let hasAtraso = false;
                 let hasAndamento = false;
                 let hasConcluido = false
 
-                response.forEach(etapa => {
-                    const inicioPrevisto = new Date(etapa.DT_INICIO_PREVISTO);
-                    const terminoPrevisto = new Date(etapa.DT_TERMINO_PREVISTO);
-                    const inicioReal = etapa.DT_INICIO_REAL ? new Date(etapa.DT_INICIO_REAL) : null;
-                    const terminoReal = etapa.DT_TERMINO_REAL ? new Date(etapa.DT_TERMINO_REAL) : null;
-                    const hoje = new Date();
-                    let situacao = "";
-                    if (!inicioReal && hoje < inicioPrevisto) situacao = "não iniciada";
-                    else if (hoje > inicioPrevisto && !inicioReal) situacao = "atrasado para inicio";
-                    else if (inicioReal && !terminoReal && hoje < terminoPrevisto) situacao = "Em andamento";
-                    else if (inicioReal && !terminoReal && hoje > terminoPrevisto) situacao = "atrasado para conclusão";
-                    else if (inicioReal && terminoReal) situacao = "Concluído";
-
-                    if (situacao.includes("atrasado")) hasAtraso = true;
-                    if (situacao === "Em andamento") hasAndamento = true;
-                    if (situacao === "Concluído") hasConcluido = true;
-                });
+               
 
                 if (hasAtraso) atrasado++;
                 else if (hasAndamento) andamento++;
@@ -200,7 +184,7 @@ export default function Projetos () {
             </thead>
             <tbody>
               {data.map((item) => (
-                <tr key={item.ID} className="shadow">
+                <tr key={item.projetoId} className="shadow">
                   <td className="border p-2">{item.NM_PROJETO}</td>
                   <td className="border p-2">{item.GERENTE_PROJETO}</td>
                   <td className="border p-2">{item.UNIDADE}</td>
@@ -211,7 +195,7 @@ export default function Projetos () {
                       <button
                         id="etapa"
                         className="button is-primary"
-                        onClick={() => router.push(`/projeto/etapa/${item.ID}`)}
+                        onClick={() => router.push(`/projeto/etapa/${item.projetoId}`)}
                       >
                         <span className="material-icons">sync</span>
                       </button>

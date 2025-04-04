@@ -26,7 +26,7 @@ export const createItem = async (itemData) => {
   try {
     console.log("Enviando dados:", JSON.stringify(itemData)); // Log para debug
 
-    const response = await fetch(`${API_URL}`, {
+    const response = await fetch(`${API_URL}/template`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -39,7 +39,7 @@ export const createItem = async (itemData) => {
       throw new Error(`Erro ao criar item: ${errorText}`);
     }
 
-    return await response.text();
+    return await response.text()
   } catch (error) {
     console.error("Erro na requisição:", error.message);
     return null;
@@ -71,21 +71,4 @@ export const deleteItem = async (id) => {
   }
 };
 
-export const fetchTemplates = async (itemData) => {
-  try {
-    const response = await fetch(`${API_URL}/items/templates`,{
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(itemData), // Envia o objeto diretamente, sem "fields"
-    });
-    if (!response.ok) {
-      throw new Error("Erro ao buscar templates");
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Erro ao buscar templates:", error);
-    return null;
-  }
-};
+

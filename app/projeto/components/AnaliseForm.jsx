@@ -3,9 +3,9 @@ import { createItem, getLastAnalise } from "../services/analiseService";
 
 export const AnaliseModal = ({ isOpen, onClose, nomeProjeto }) => {
   const [formData, setFormData] = useState({
-   NM_PROJETO:nomeProjeto,
+    NM_PROJETO: Number(nomeProjeto) || 0, // Garante que seja um número
     ANALISE: "",
-    ENTRAVE: false
+    ENTRAVE: ""
   });
   const [lastAnalise, setLastAnalise] = useState(null);
 
@@ -16,25 +16,48 @@ export const AnaliseModal = ({ isOpen, onClose, nomeProjeto }) => {
   }, [isOpen, nomeProjeto]);
 
   const fetchLastAnalise = async () => {
-    const data = await getLastAnalise(nomeProjeto);
+    const data = await getLastAnalise(Number(nomeProjeto));
     if (data) {
       setLastAnalise(data);
-      setFormData({ ANALISE: "", ENTRAVE: "Nao" });
+      setFormData((prev) => ({
+        ...prev,
+        NM_PROJETO: Number(nomeProjeto), // Mantém como inteiro
+        ANALISE: "",
+        ENTRAVE: "",
+      }));
     }
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    let newValue = value;
+    if (name === "ENTRAVE") {
+      newValue = value === "true"; // Converte string para booleano
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: newValue,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(nomeProjeto);
-    const response = await createItem({ ...formData }, nomeProjeto);
-    if (response) {
+
+    const dataToSend = {
+      ...formData,
+      NM_PROJETO: Number(formData.NM_PROJETO), 
+    };
+
+    console.log(dataToSend);
+
+    const response = await createItem(dataToSend);
+    if (response.ok) {
       alert("Análise salva com sucesso!");
+      window.location.reload()
       onClose();
+
     }
   };
 
@@ -63,12 +86,14 @@ export const AnaliseModal = ({ isOpen, onClose, nomeProjeto }) => {
               <label className="block text-sm font-medium">Entrave</label>
               <select
                 name="ENTRAVE"
-                value={formData.ENTRAVE}
+                value={formData.ENTRAVE.toString()}
                 onChange={handleInputChange}
                 className="w-full p-2 border border-gray-300 rounded-md"
+                required
               >
-                <option value={true}>Sim</option>
-                <option value={false}>Não</option>
+                <option value="">Selecione um entrave</option>
+                <option value="true">Sim</option>
+                <option value="false">Não</option>
               </select>
             </div>
             <div className="flex justify-end space-x-2">

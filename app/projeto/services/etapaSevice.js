@@ -3,7 +3,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL_ETAPA || "http://localhost:5148/
 export const getAllEtapas = async (id) => {
   try {
     const response = await fetch(`${API_URL}/${id}`);
-    if (!response.ok) throw new Error("Erro ao obter itens");
+    console.log(`${response} easdasdas`)
     return await response.json();
   } catch (error) {
     console.error(error);

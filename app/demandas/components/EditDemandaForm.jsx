@@ -30,7 +30,7 @@ const EditFormModal = ({ itemId, onSave , onClose}) => {
   DT_CONCLUSAO: "",
   CATEGORIA: "",
   STATUS: "",
-  PO_SUBTDCR: "",
+  NM_PO_SUBTDCR: "",
   NM_PO_DEMANDANTE: "",
   NM_AREA_DEMANDANTE: "",
   UNIDADE: "",
@@ -44,6 +44,8 @@ const EditFormModal = ({ itemId, onSave , onClose}) => {
     try {
       const responseCategoria = await getAllCategoria();
       const responseDemandante = await getAllDemandantes();
+      console.log(responseCategoria)
+      console.log(responseDemandante)
       setDemandantes(responseDemandante)
       setCategorias(responseCategoria);
     } catch (error) {
@@ -66,14 +68,14 @@ const EditFormModal = ({ itemId, onSave , onClose}) => {
             // Mapear os dados da API para os campos esperados no formulário
             setFormData({
               NM_DEMANDA: response.NM_DEMANDA,
-              DT_SOLICITACAO: response.DT_SOLICITACAO ? response.DT_SOLICITACAO.split('T')[0] : '',
-              DT_ABERTURA: response.DT_ABERTURA ? response.DT_ABERTURA.split('T')[0] : '',
-              DT_CONCLUSAO: response.DT_CONCLUSAO ? response.DT_CONCLUSAO.split('T')[0] : '',
-              CATEGORIA: response.CATEGORIA,
+              DT_SOLICITACAO: response.DT_SOLICITACAO,
+              DT_ABERTURA: response.DT_ABERTURA ,
+              DT_CONCLUSAO: response.DT_CONCLUSAO, 
+              CATEGORIA: response.CATEGORIA.Nome,
               STATUS: response.STATUS,
-              PO_SUBTDCR: response.PO_SUBTDCR, // Mapear o nome correto
+              NM_PO_SUBTDCR: response.NM_PO_SUBTDCR, // Mapear o nome correto
               NM_PO_DEMANDANTE: response.NM_PO_DEMANDANTE ,
-              NM_AREA_DEMANDANTE: response.NM_AREA_DEMANDANTE,
+              NM_AREA_DEMANDANTE: response.NM_AREA_DEMANDANTE.NM_DEMANDANTE,
               UNIDADE: response.UNIDADE,
               NR_PROCESSO_SEI: response.NR_PROCESSO_SEI ,
               PERIODICO: response.PERIODICO,
@@ -104,12 +106,12 @@ const handleSubmit = async (e) => {
 
 
 body.NM_DEMANDA = formData.NM_DEMANDA || '';
-body.DT_SOLICITACAO = formData.DT_SOLICITACAO ? formData.DT_SOLICITACAO.split('T')[0] : null;
-body.DT_ABERTURA = formData.DT_ABERTURA  ? formData.DT_ABERTURA.split('T')[0] : null;
-body.DT_CONCLUSAO = formData.DT_CONCLUSAO ? formData.DT_CONCLUSAO.split('T')[0] : null;
+body.DT_SOLICITACAO = formData.DT_SOLICITACAO;
+body.DT_ABERTURA = formData.DT_ABERTURA;
+body.DT_CONCLUSAO = formData.DT_CONCLUSAO;
 body.CATEGORIA = formData.CATEGORIA || '';
 body.STATUS = formData.STATUS || '';
-body.PO_SUBTDCR = formData.PO_SUBTDCR || '';
+body.NM_PO_SUBTDCR = formData.NM_PO_SUBTDCR || '';
 body.NM_PO_DEMANDANTE = formData.NM_PO_DEMANDANTE || '';
 body.NM_AREA_DEMANDANTE = formData.NM_AREA_DEMANDANTE || '';
 body.UNIDADE = formData.UNIDADE || '';
@@ -169,29 +171,30 @@ body.PATROCINADOR = formData.PATROCINADOR || '';
 
 
 {["DT_SOLICITACAO", "DT_ABERTURA", "DT_CONCLUSAO"].map((field) => (
-  <div key={field} className="flex flex-col">
+  <div key={field} className="flex flex-col mb-4">
     <label htmlFor={field} className="text-sm font-semibold text-gray-700">
-      {fieldLabels[field] || field} {/* Usa o nome amigável ou mantém o original */}
+      {fieldLabels[field] || field}
     </label>
     <input
       type="date"
       id={field}
       name={field}
-      value={formData[field] ? new Date(formData[field]).toISOString().split('T')[0] : ''}
+      value={formData[field] ? formData[field].slice(0, 10) : ""} // Mostra só yyyy-MM-dd no campo
       onChange={(e) => {
-        const value = e.target.value === "" ? null : e.target.value; // Converte a string vazia para null
-        handleChange({ target: { name: field, value } }); // Atualiza o estado com a data ou null
+        const dateValue = e.target.value;
+        const isoValue = dateValue ? new Date(dateValue).toISOString() : null; // Converte para formato ISO
+        handleChange({ target: { name: field, value: isoValue } });
       }}
       className="mt-1 p-2 border border-gray-300 rounded"
-
-
     />
   </div>
 ))}
 
 
+
+
           {[
-            { id: "CATEGORIA", label: "Categoria", options: categorias.map(item => ({ value: item.NM_CATEGORIA, label: item.NM_CATEGORIA })) },
+            { id: "CATEGORIA", label: "Categoria", options: categorias.map(item => ({ value: item.Nome, label: item.Nome })) },
             { id: "STATUS", label: "Situação", options: ["Em andamento", "Atrasado", "Concluído", "Não iniciada"].map(value => ({ value, label: value })) },
             { id: "PO_SUBTDCR", label: "Nome do Responsável SUBTDCR", options: responsaveis.map(resp => ({ value: resp, label: resp })) },
             { id: "NM_AREA_DEMANDANTE", label: "Nome da Área Demandante", options: demandantes.map(item => ({ value: item.NM_DEMANDANTE, label: item.NM_DEMANDANTE })) },

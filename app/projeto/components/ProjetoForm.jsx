@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { createItem, fetchTemplates } from "../services/projetoService";
-import { createEtapa } from "../services/etapaSevice";
 
 const ProjetoForm = ({ onClose, isOpen }) => {
   if (!isOpen) return null;
@@ -23,41 +22,15 @@ const ProjetoForm = ({ onClose, isOpen }) => {
   });
 
   const [error, setError] = useState("");
-  const [etapas, setEtapas] = useState([]);
-
-  useEffect(() => {
-    if (projeto.TEMPLATE === "Contratação pregão") {
-      const fetchData = async () => {
-        try {
-          const data = await fetchTemplates({ NM_TEMPLATE: "Contratação pregão" });
-          setEtapas(data || []);
-        } catch (err) {
-          console.error("Erro ao buscar templates:", err);
-          setEtapas([]);
-        }
-      };
-      fetchData();
-    } else {
-      setEtapas([]); // Se mudar para outro template, limpar etapas
-    }
-  }, [projeto.TEMPLATE]);
-
+ 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       const response = await createItem(projeto);
 
-      if (response) {
-        if (projeto.TEMPLATE === "Contratação pregão" && etapas.length > 0) {
-          for (const etapa of etapas) {
-            await createEtapa({
-              NM_ETAPA: etapa.NM_ETAPA,
-              NM_PROJETO: projeto.NM_PROJETO, // ID do projeto recém-criado
-              PERCENT_TOTAL_ETAPA: etapa.PERCENT_TOTAL,
-            });
-          }
-        }
+      
+        
 
         setProjeto({
           NM_PROJETO: "",
@@ -76,9 +49,7 @@ const ProjetoForm = ({ onClose, isOpen }) => {
         console.log("Cadastro realizado com sucesso!");
         onClose();
         window.location.reload();
-      } else {
-        setError("Erro no momento do cadastro do Projeto");
-      }
+      
     } catch (error) {
       setError("Erro no momento do cadastro do Projeto");
       console.error("Erro ao enviar o formulário:", error);
@@ -90,7 +61,7 @@ const ProjetoForm = ({ onClose, isOpen }) => {
 
   setProjeto((prev) => ({
     ...prev,
-    // Para checkbox, usa checked; para outros campos, usa value
+    
     [name]: type === "checkbox" ? checked : value,
   }));
 };
@@ -170,9 +141,9 @@ const ProjetoForm = ({ onClose, isOpen }) => {
             required
           >
             <option value="">Selecione um template</option>
-            <option value="Desenvolvimento">Desenvolvimento</option>
+          
             <option value="Contratação pregão">Contratação pregão</option>
-            <option value="Geral">Geral</option>
+          
           </select>
         </div>
 <div>
@@ -210,12 +181,7 @@ const ProjetoForm = ({ onClose, isOpen }) => {
                 </label>
               </div>
 
-              <p className="mt-2 text-sm">
-                <strong>Valores:</strong>
-                <br /> PDTIC 24/27: {projeto.pdtiC2427 ? "Sim" : "Não"}
-                <br /> PROFISCO II: {projeto.profiscoii ? "Sim" : "Não"}
-                <br /> PTD 24/27: {projeto.ptD2427 ? "Sim" : "Não"}
-              </p>
+             
             </div>
           </div>
 

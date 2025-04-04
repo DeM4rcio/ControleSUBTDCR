@@ -49,6 +49,8 @@ export const createItem = async (itemData) => {
 
 export const updateItem = async (id, itemData) => {
   try {
+    console.log(id)
+    console.log(itemData)
     const response = await fetch(`${API_URL}/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -73,7 +75,7 @@ export const deleteItem = async (id) => {
 
 export const tmpAVG = async () => {
   try {
-    const response = await fetch(`${API_URL}/temp`, { method: "GET" });
+    const response = await fetch(`${API_URL}/rank`, { method: "GET" });
     return await response.json();
   } catch (error) {
     console.error(error);

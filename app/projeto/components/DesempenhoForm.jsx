@@ -10,30 +10,28 @@ export const DesempenhoForm = ({ onClose, isOpen, etapa }) => {
   });
 
 
-  // Função para formatar datas para exibição e submissão (dd-mm-yyyy)
+ 
   const formatDateForDisplay = (dateString) => {
-    if (!dateString) return ""; // Evita erro se for null ou undefined
+    if (!dateString) return ""; 
 
-  return dateString.split("T")[0]; // Retorna apenas 'YYYY-MM-DD'
+  return dateString.split("T")[0]; 
   };
 
-  // Função para carregar os dados ao abrir o modal
   const handleLoadItem = async () => {
-    if (!etapa?.ID) return; // Evita erro caso o ID não esteja definido
+    if (!etapa?.EtapaProjetoId) return; 
 
-    const data = await getItemById(etapa.ID);
+    const data = await getItemById(etapa.EtapaProjetoId);
     console.log(data)
     if (data) {
       setFormData({
-        DT_INICIO_REAL: formatDateForDisplay(data.dT_INICIO_REAL),
-        DT_TERMINO_REAL: formatDateForDisplay(data.dT_TERMINO_REAL),
-        PERCENT_EXEC_ETAPA: data.percenT_EXEC_ETAPA || "",
-        ANALISE: data.analise || "",
+        DT_INICIO_REAL: formatDateForDisplay(data.DT_INICIO_REAL),
+        DT_TERMINO_REAL: formatDateForDisplay(data.DT_TERMINO_REAL),
+        PERCENT_EXEC_ETAPA: data.PERCENT_EXEC_ETAPA || "",
+        ANALISE: data.ANALISE || "",
       });
     }
   };
 
-  // Dispara a busca de dados quando o modal for aberto
   useEffect(() => {
     if (isOpen) {
       handleLoadItem();
@@ -58,7 +56,7 @@ export const DesempenhoForm = ({ onClose, isOpen, etapa }) => {
       ANALISE: formData.ANALISE,
     };
 
-    await updateItem(etapa.ID, itemData);
+    await updateItem(etapa.EtapaProjetoId, itemData);
     alert("Etapa analisada com sucesso!");
     onClose();
     window.location.reload();
